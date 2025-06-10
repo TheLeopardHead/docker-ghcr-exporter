@@ -1,0 +1,27 @@
+name: Export Docker Image
+
+on:
+  workflow_dispatch:
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to GHCR
+        run: |
+          echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u TheLeopardHead --password-stdin
+
+      - name: Pull the accel-sim image
+        run: |
+          docker pull ghcr.io/accel-sim/accel-sim-framework:ubuntu-24.04-cuda-12.8
+
+      - name: Save and compress image
+        run: |
+          docker save ghcr.io/accel-sim/accel-sim-framework:ubuntu-24.04-cuda-12.8 | gzip > image.tar.gz
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: docker-image
+          path: image.tar.gz
+
