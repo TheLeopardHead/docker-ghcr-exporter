@@ -20,7 +20,7 @@ jobs:
         run: |
           # 将原始镜像重新打上标签，指向你的国内仓库
           # 格式：国内仓库地址/命名空间/镜像名:标签
-          docker tag ghcr.io/accel-sim/accel-sim-framework:ubuntu-24.04-cuda-12.8 ${{ secrets.DOCKER_REGISTRY_CN }}/your-namespace/accel-sim-framework:ubuntu-24.04-cuda-12.8
+          docker tag ghcr.io/accel-sim/accel-sim-framework:ubuntu-24.04-cuda-12.8 ${{ secrets.DOCKER_REGISTRY_CN }}/enzotang/accel-sim-framework:ubuntu-24.04-cuda-12.8
 
       - name: Push image to China Registry
         run: docker push ${{ secrets.DOCKER_REGISTRY_CN }}/enzotang/accel-sim-framework:ubuntu-24.04-cuda-12.8
