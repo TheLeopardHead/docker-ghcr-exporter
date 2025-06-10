@@ -23,4 +23,4 @@ jobs:
           docker tag ghcr.io/accel-sim/accel-sim-framework:ubuntu-24.04-cuda-12.8 ${{ secrets.DOCKER_REGISTRY_CN }}/your-namespace/accel-sim-framework:ubuntu-24.04-cuda-12.8
 
       - name: Push image to China Registry
-        run: docker push ${{ secrets.DOCKER_REGISTRY_CN }}/my-namespace/accel-sim-framework:ubuntu-24.04-cuda-12.8
+        run: docker push ${{ secrets.DOCKER_REGISTRY_CN }}/enzotang/accel-sim-framework:ubuntu-24.04-cuda-12.8
