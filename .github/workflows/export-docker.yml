@@ -1,26 +1,26 @@
-name: Export Docker Image
+name: Sync Image to China Registry
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: # 保持手动触发
 
 jobs:
-  export:
+  sync:
     runs-on: ubuntu-latest
     steps:
       - name: Login to GHCR
-        run: docker login ghcr.io -u TheLeopardHead -p "${{ secrets.GHCR_TOKEN }}"
+        run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u TheLeopardHead --password-stdin
 
-      - name: Pull the accel-sim image
+      - name: Login to China Registry (e.g., Aliyun)
+        run: echo "${{ secrets.DOCKER_PASSWORD_CN }}" | docker login ${{ secrets.DOCKER_REGISTRY_CN }} -u ${{ secrets.DOCKER_USERNAME_CN }} --password-stdin
+
+      - name: Pull image from GHCR
+        run: docker pull ghcr.io/accel-sim/accel-sim-framework:ubuntu-24.04-cuda-12.8
+
+      - name: Retag image for China Registry
         run: |
-          docker pull ghcr.io/accel-sim/accel-sim-framework:ubuntu-24.04-cuda-12.8
+          # 将原始镜像重新打上标签，指向你的国内仓库
+          # 格式：国内仓库地址/命名空间/镜像名:标签
+          docker tag ghcr.io/accel-sim/accel-sim-framework:ubuntu-24.04-cuda-12.8 ${{ secrets.DOCKER_REGISTRY_CN }}/your-namespace/accel-sim-framework:ubuntu-24.04-cuda-12.8
 
-      - name: Save and compress image
-        run: |
-          docker save ghcr.io/accel-sim/accel-sim-framework:ubuntu-24.04-cuda-12.8 | gzip > image.tar.gz
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: docker-image
-          path: image.tar.gz
-
+      - name: Push image to China Registry
+        run: docker push ${{ secrets.DOCKER_REGISTRY_CN }}/your-namespace/accel-sim-framework:ubuntu-24.04-cuda-12.8
