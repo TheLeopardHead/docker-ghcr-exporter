@@ -8,8 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Login to GHCR
-        run: |
-          echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u TheLeopardHead --password-stdin
+        run: docker login ghcr.io -u TheLeopardHead -p "${{ secrets.GHCR_TOKEN }}"
 
       - name: Pull the accel-sim image
         run: |
