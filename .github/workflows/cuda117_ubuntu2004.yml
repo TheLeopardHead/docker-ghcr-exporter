@@ -1,0 +1,49 @@
+# .github/workflows/sync-cuda-image.yml
+
+# Workflow name
+name: Sync CUDA Image to Aliyun ACR
+
+# Trigger for this workflow
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  sync-image:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Log in to your Aliyun Container Registry (ACR)
+      # Use the docker/login-action to securely log in
+      - name: Log in to Aliyun Container Registry
+        uses: docker/login-action@v2
+        with:
+          # Your China ACR address, read from Secrets
+          registry: ${{ secrets.DOCKER_REGISTRY_CN }}
+          # Your ACR login username, read from Secrets
+          username: ${{ secrets.DOCKER_USERNAME_CN }}
+          # Your ACR login password or access token, read from Secrets
+          password: ${{ secrets.DOCKER_PASSWORD_CN }}
+
+      # Step 2: Pull, Tag, and Push the Docker Image
+      - name: Pull, Tag, and Push Docker Image
+        run: |
+          # Define the source and target image names
+          SOURCE_IMAGE="nvidia/cuda:11.7.1-devel-ubuntu20.04"
+          # Define the target image path in your China ACR
+          # Format: [ACR Address]/[Namespace]/[Repository Name]:[Tag]
+          TARGET_IMAGE="${{ secrets.DOCKER_REGISTRY_CN }}/enzotang/cuda:11.7.1-devel-ubuntu20.04"
+
+          # Pull the source image from Docker Hub
+          echo "Pulling image from Docker Hub: $SOURCE_IMAGE"
+          docker pull $SOURCE_IMAGE
+
+          # Tag the image to match your ACR repository path
+          echo "Tagging image for China Registry: $TARGET_IMAGE"
+          docker tag $SOURCE_IMAGE $TARGET_IMAGE
+
+          # Push the retagged image to your ACR
+          echo "Pushing image to China Registry: $TARGET_IMAGE"
+          docker push $TARGET_IMAGE
+
